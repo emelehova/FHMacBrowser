@@ -1,6 +1,7 @@
 import Foundation
 import IOKit.pwr_mgt
 
+@MainActor
 enum Power {
     private static var assertionID: IOPMAssertionID = 0
 
