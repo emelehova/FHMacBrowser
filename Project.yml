@@ -29,11 +29,12 @@ targets:
         PRODUCT_NAME: FHMacBrowser
         PRODUCT_MODULE_NAME: FHMacBrowser
         CODE_SIGNING_ALLOWED: NO
-        ONLY_ACTIVE_ARCH: YES   
+        ONLY_ACTIVE_ARCH: YES
+        # ARCHS: arm64  # опционально, если хочешь жёстко
     sources:
       - path: FHMacBrowser
         excludes:
-          - Assets.xcassets/**   
+          - Assets.xcassets/**   # ассеты не используем
     dependencies:
       - framework: IOKit.framework
     scheme:
