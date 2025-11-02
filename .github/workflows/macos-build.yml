@@ -16,13 +16,19 @@ jobs:
 
       - name: Build
         run: |
-          xcodebuild -project FHMacBrowser.xcodeproj \
-            -scheme FHMacBrowser -configuration Release \
-            -destination 'platform=macOS' build
+          xcodebuild \
+            -project FHMacBrowser.xcodeproj \
+            -scheme FHMacBrowser \
+            -configuration Release \
+            -destination 'platform=macOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            build
 
       - name: Package .app
         run: |
-          APP_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "FHMacBrowser.app" -type d | head -n 1)
+          APP_PATH="build/Build/Products/Release/FHMacBrowser.app"
+          test -d "$APP_PATH"
           ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" FHMacBrowser.zip
           echo "Packed $APP_PATH"
 
