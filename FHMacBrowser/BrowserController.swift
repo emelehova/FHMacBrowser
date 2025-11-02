@@ -2,6 +2,7 @@ import Foundation
 import WebKit
 import Cocoa
 
+@MainActor
 final class BrowserController: ObservableObject {
     @Published var urlString: String = Args.startURL
     @Published var mobileMode: Bool = Args.mobile
@@ -15,6 +16,7 @@ final class BrowserController: ObservableObject {
         self.dataStore = Args.tempProfile ? .nonPersistent() : .default()
 
         let config = WKWebViewConfiguration()
+        // macOS: preferredContentMode доступен; ок
         config.defaultWebpagePreferences.preferredContentMode = .recommended
         config.suppressesIncrementalRendering = true
         config.preferences.javaScriptCanOpenWindowsAutomatically = false
@@ -22,8 +24,8 @@ final class BrowserController: ObservableObject {
         config.websiteDataStore = dataStore
         config.userContentController = contentController
         config.allowsAirPlayForMediaPlayback = false
-        config.allowsInlineMediaPlayback = true
-        config.mediaTypesRequiringUserActionForPlayback = [.all] // экономия авто-воспроизведения
+        // macOS: НЕТ config.allowsInlineMediaPlayback — удалено
+        config.mediaTypesRequiringUserActionForPlayback = [.all] // экономим автоплей
 
         self.webView = WKWebView(frame: .zero, configuration: config)
         self.webView.allowsLinkPreview = false
@@ -47,19 +49,17 @@ final class BrowserController: ObservableObject {
         }
         scripts.forEach { contentController.addUserScript($0) }
 
-        // Блокировка ресурсов через Content Blocking Rules
+        // Блокировка ресурсов
         applyBlockingRules()
 
         // Mobile UA при необходимости
         applyMobileUA()
 
-        // В некоторых сборках отключение фона ускоряет рендер
+        // Иногда ускоряет рендер на старых маках
         webView.setValue(false, forKey: "drawsBackground")
     }
 
-    func bootstrap() {
-        // Доп. инициализация при необходимости
-    }
+    func bootstrap() {}
 
     func start() { go() }
 
@@ -75,7 +75,6 @@ final class BrowserController: ObservableObject {
         } else {
             webView.customUserAgent = nil
         }
-        // Применится со следующей навигацией; при желании можно вызвать reload()
     }
 
     func reloadWithScripts() {
@@ -86,7 +85,7 @@ final class BrowserController: ObservableObject {
         guard !Args.blockAssets.isEmpty else { return }
         let controller = webView.configuration.userContentController
         let json = makeContentRuleListJSON()
-        WKContentRuleListStore.default().compileContentRuleList(forIdentifier: "FHBlock", encodedContentRuleList: json) { list, err in
+        WKContentRuleListStore.default().compileContentRuleList(forIdentifier: "FHBlock", encodedContentRuleList: json) { list, _ in
             if let list = list {
                 controller.add(list)
             }
