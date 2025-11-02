@@ -15,6 +15,7 @@ struct FHMacBrowserApp: App {
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var lockFile: FileHandle?
 
