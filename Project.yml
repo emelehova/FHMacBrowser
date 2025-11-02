@@ -1,0 +1,41 @@
+name: FHMacBrowser
+options:
+  minimumXcodeGenVersion: 2.38.0
+  createIntermediateGroups: true
+
+configs:
+  Release: release
+  Debug: debug
+
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.example.fhmacbrowser
+    MACOSX_DEPLOYMENT_TARGET: 13.0
+    SWIFT_VERSION: 5.9
+    CODE_SIGN_ENTITLEMENTS: ""
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    ENABLE_HARDENED_RUNTIME: NO
+    INFOPLIST_FILE: FHMacBrowser/Info.plist
+
+targets:
+  FHMacBrowser:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+    settings:
+      base:
+        PRODUCT_NAME: FHMacBrowser
+        PRODUCT_MODULE_NAME: FHMacBrowser
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGNING_ALLOWED: NO
+    sources:
+      - path: FHMacBrowser
+        excludes:
+          - Assets.xcassets/**  # нет и не требуется
+    dependencies:
+      - framework: IOKit.framework
+    scheme:
+      testTargets: []
+      gatherCoverageData: false
